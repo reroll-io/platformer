@@ -1,16 +1,10 @@
-mod platformer;
-
 extern crate amethyst;
 
-use amethyst::utils::application_root_dir;
 use amethyst::prelude::*;
-use amethyst::renderer::{
-    DisplayConfig,
-    DrawFlat2D,
-    Pipeline,
-    RenderBundle,
-    Stage,
-};
+use amethyst::renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage};
+use amethyst::utils::application_root_dir;
+
+mod entities;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -20,22 +14,18 @@ fn main() -> amethyst::Result<()> {
 
     let config = DisplayConfig::load(&path);
 
-    let pipe = Pipeline::build()
-        .with_stage(
-            Stage::with_backbuffer()
-                .clear_target([0.0, 0.0, 0.0, 1.0], 1.0)
-                .with_pass(DrawFlat2D::new()),
-        );
+    let pipe = Pipeline::build().with_stage(
+        Stage::with_backbuffer()
+            .clear_target([0.0, 0.0, 0.0, 1.0], 1.0)
+            .with_pass(DrawFlat2D::new()),
+    );
 
     let game_data = GameDataBuilder::default()
-        .with_bundle(
-            RenderBundle::new(pipe, Some(config))
-                .with_sprite_sheet_processor()
-        )?;
+        .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?;
 
-    use crate::platformer::Platformer;
+    use entities::InitialState;
 
-    let mut game = Application::new("./", Platformer, game_data)?;
+    let mut game = Application::new("./", InitialState, game_data)?;
 
     game.run();
 
